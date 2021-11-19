@@ -25,13 +25,13 @@ exports.signup = (req, res, next) => {
               return res.satus(500).json({error: err})
             } else {
               console.log(hash);
-              let signupQuery = `INSERT INTO users VALUES (null, ?, "${hash}", ?, ?, now(), null) `; 
+              let signupQuery = `INSERT INTO users VALUES (null, ?, "${hash}", ?, ?, now()) `; 
               connection.query(signupQuery, [userObjet.userEmail, userObjet.userPseudo, imageUrl ],
               function (err, result)  { 
                 if (!err) { 
                   res.status(201).json({ message: 'utilisateur créé , super!! !' })
                 } else {
-                      res.status(400).json({ error: err.code });
+                    res.status(400).json({ error: err.code });
                 } 
               })
             }
@@ -44,11 +44,10 @@ exports.signup = (req, res, next) => {
 }
 // Login
 exports.login =  (req, res, next) => {
-  let loginQuery = `SELECT * FROM users where email = ?` ;   //"${req.body.email}"
+  let loginQuery = `SELECT * FROM users where email = ?` ; 
   connection.query(loginQuery, [req.body.email] ,function (err, result) {
     if (req.body.email == process.env.ADMIN_EMAIL) {
       console.log("email ADMIN OK");
-      // res.json({message : "cet email ADMIN"})
       if (!result) {
         res.status(400).send({ error: 'Utilisateur non trouvé !' });
       } else if (result.length > 0)
@@ -58,7 +57,7 @@ exports.login =  (req, res, next) => {
           if (!valid) {
             return res.status(401).send ({ error: 'Mot de passe incorrect !' });
           } else {res.status(202).json
-            ({ //Retourne le User Id, le pseudo et le Token
+            ({ 
               id: result[0].id,
               pseudo: result[0].pseudo,
               email: result[0.].email,
@@ -81,7 +80,7 @@ exports.login =  (req, res, next) => {
         if (!valid) {
           return res.status(401).send ({ error: 'Mot de passe incorrect !' });
         } else {res.status(200).json
-          ({ //Retourne le User Id, le pseudo et le Token
+          ({ 
             id: result[0].id,
             pseudo: result[0].pseudo,
             email: result[0.].email,
@@ -95,22 +94,18 @@ exports.login =  (req, res, next) => {
     }
   })
 }
-// GET d'un user unique : posts.vue / axios userData()
+// GET d'un user unique : posts.vue + superUser.vue / axios userData()
 exports.userEmail = (req, res) => { 
   let sql = "SELECT * FROM users WHERE email= ?";
   connection.query(sql, [req.params.email], (err, results) => {
     if (err) {
       console.log("error: ", err);
     };
-    // console.log(results);
-    res.send(JSON.stringify(results)); //
-    // console.log(results);
-    // console.log(req.params.email);
+    res.send(JSON.stringify(results)); 
   });
 }
 // DELETE un user / superUser.vue / supUser(a)
 exports.supUsrCtrl = (req, res, next) => {
-  // console.log(req.params.id);
   let sqlDeletePost = "DELETE FROM users WHERE users.id = ?";
   connection.query(sqlDeletePost, [req.params.id], 
     (err, result) => {
@@ -123,18 +118,13 @@ exports.supUsrCtrl = (req, res, next) => {
 }
 // GET tout les user / superUser.vue / allUsers()
 exports.userAll = (req, res, next) => {
-  // console.log(req.originalurl)
   let sqlAllUser = "SELECT * FROM `users` ORDER BY users.date_user DESC"
   connection.query(sqlAllUser, function (err, result) {
     if (err) {
       console.log(err);
       return res.sendStatus(500);
-      
-    } else {
-      if(result.length > 0) {
-        // console.log(result);
-        res.send(JSON.stringify(result));
-      }
+    } else if(result.length > 0) {
+        res.json(result);
     };
   })
 };

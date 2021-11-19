@@ -7,15 +7,15 @@ const multer = require('../middleware/multer-config');
 // GET tout les posts
 router.get('/posts', auth,  postCtrl.allPosts);  
 // GET un post
-router.get('/posts/:id', auth, postCtrl.postIdCtrl); 
+router.get('/posts/:id', auth, postCtrl.postIdCtrl);
+// GET tout les posts d'un user
+router.get('/posts/user/:id', auth, postCtrl.postUserIdCtrl); 
 // POST un post
 router.post('/posts', auth, multer, postCtrl.createPost); 
 // DELETE un post
 router.delete('/posts/:id', auth, postCtrl.supPostCtrl); 
 // GET tout les comments d'un user
 router.get('/posts/user/comment/:id',  auth, postCtrl.commentUserIdCtrl);
-// GET tout les posts d'un user
-router.get('/posts/user/:id', auth, postCtrl.postUserIdCtrl);
 // GET tout les comments
 router.get('/comments',  auth, postCtrl.commentAllCtrl);
 // DELETE un comment d'un USER

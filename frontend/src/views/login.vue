@@ -109,10 +109,9 @@
                   required
                 />
               </div>
-              <h2 class="title mt-2" v-if="mode == 'signup'">
+              <h2 class="title mt-3 mb-3" v-if="mode == 'signup'">
                 <strong> Cliquez sur <span class="connexion"> connexion</span> pour entrée !!</strong>
               </h2>
-
               <!-- bouton conditionel -->
               <button
                 aria-label="Connexion au site"
@@ -120,15 +119,15 @@
                 type="submit"
                 class="button btn btn-primary mb-3"
                 @click.prevent="login()">
-                  <strong>connexion</strong>
-                </button>
+                <strong>connexion</strong>
+              </button>
               <button
                 aria-label="Enregistrement de votre profil"
                 v-if="mode == 'inscription'"
                 type="submit"
                 class="button  btn btn-success m-3"
                 @click.prevent="signup()">
-              <strong>connexion</strong> 
+                <strong>connexion</strong> 
               </button>
               <button
                 aria-label="Connexion au site"
@@ -201,7 +200,6 @@ export default {
       })
       fileReader.readAsDataURL(files[0]);
       this.selectedFile = files[0]
-      // console.log("FILES [0]", files[0]);
     },
     //SIGNUP
     async signup() {
@@ -215,8 +213,7 @@ export default {
         fd.append('userPassword', this.user.password );
         fd.append('userPasswordConfirm', this.user.passwordConfirm );
         fd.append('userPseudo', this.user.pseudo );
-          // console.log("la forme data : ", fd);
-      await axios
+        axios
         .post(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/signup`, fd)
           .then((response) => {
             console.log("la reponse est 201 : " + response.error);
@@ -242,7 +239,6 @@ export default {
     async login() {
       await axios.post(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/login`, this.user)
       .then((response) => {
-        // console.log("la response post login 200: ", response);
         if (response.status == 200) {
           const userInfo = {
             email: this.user.email,
@@ -253,7 +249,6 @@ export default {
           localStorage.setItem("userInfo", JSON.stringify(userInfo));
           this.$router.push({ name: "posts" });
         } 
-        // console.log("la response 202 est : ", response);
         if (response.status == 202) {
           const userInfo = {
             email: this.user.email,
@@ -270,7 +265,6 @@ export default {
       .catch(error => {
         alert(error.response.data.error);
         location.reload()
-        // console.dir(error.response.data)
       })
     },
   },

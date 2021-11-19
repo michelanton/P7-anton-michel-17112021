@@ -1,7 +1,7 @@
 <template>
   <div class="postCommentaire">
     <navGeneral></navGeneral>
-    <h1 class="mt-2">Voici les commentaires de cet articles</h1>
+    <h1 class="title mt-2">Voici les commentaires de cet articles</h1>
      <!-- bouton retour aux posts --> 
     <button
       aria-label="Retour à la listes des articles"
@@ -9,15 +9,14 @@
       type="button"
       class="button  btn btn-warning m-3"
       @click.prevent="postReturn()">
-      retour aux posts
+      retour aux articles
     </button>
     <!-- cadre de l'article choisi -->
     <div class="date">
-      <p>le {{post.date}}</p>
+      <p>le {{post.postDate}}</p>
     </div> 
+     <!-- cadre user article -->
     <div class=" postCard "> 
-     
-        <!-- cadre user article -->
         <div class="  userinuse ">
           <div class="imgAvatar">
             <img :src="post.avatar_url" alt="avatar">
@@ -30,15 +29,6 @@
         </div>
         <h3 class="card-text textArticle mt-4">{{post.description}}</h3>    
     </div>
-    <!-- bouton Écrire un commentaire --> 
-    <button
-      aria-label="Ouvre la fenétre de rédaction d'un commentaire"
-      v-if="modeWriteComment == 'btnComment'"
-      type="submit"
-      class="button  btn btn-warning m-3"
-      @click.prevent="writeComment()">
-      Écrire un commentaire
-    </button>
     <!-- cadre ecrire commentaire --> 
     <section>
       <div class="postCard mt-3 mb-3" v-if="modeWriteComment == 'writeComment'">
@@ -66,12 +56,21 @@
           </button>
         </div>
     </section>
-      <!-- cadre des commentaires sur cet article -->
+    <!-- cadre des commentaires sur cet article -->
     <section>
-        <h3>Les comentaires</h3>
+        <h3 class="title mt-3">Les comentaires :</h3>
+        <!-- bouton Écrire un commentaire --> 
+         <button
+            aria-label="Ouvre la fenétre de rédaction d'un commentaire"
+            v-if="modeWriteComment == 'btnComment'"
+            type="submit"
+            class="button  btn btn-warning m-3"
+            @click.prevent="writeComment()">
+            Écrire un commentaire
+          </button>
       <div class=" " :key="index" v-for="(comment, index) in comments">
         <div class="date">
-          <p>le : {{comment.date}}</p>
+          <p>le : {{comment.dateComment}}</p>
         </div>
         <div class="postCard mb-4">
           <div class="userinuse">
@@ -80,8 +79,7 @@
             </div>
             <h3 class=" pseudo mt-2"> envoyé par : <strong> {{comment.pseudo}}</strong></h3>
           </div>
-            <h3 class="commentaires mt-5">{{comment.comment}}</h3>
-          <!-- <h6 class="card-text">{{comment}}</h6> -->
+          <h3 class="commentaires mt-5">{{comment.comment}}</h3>
         </div>
       </div>
     </section>
@@ -118,13 +116,17 @@ export default {
     leFooter
   },
   mounted(){
-   
-    this.postId = JSON.parse(localStorage.getItem('postInfo'));
-    this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    console.log(this.postId)
-    console.log(this.userInfo)
-    this.thePost();
-    this.theComments();
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    if (userInfo) { 
+      this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      this.postId = JSON.parse(localStorage.getItem('postInfo'));
+      console.log("pOstID", this.postId)
+      console.log("UserInfo", this.userInfo)
+      this.thePost();
+      this.theComments();
+    } else {
+      this.$router.push({ name: "to404" });
+    }
    
    
   },
@@ -138,8 +140,6 @@ export default {
     },
     //GET du post du user //  postIdCtrl()
     async thePost(){ 
-      // console.log(this.postId)
-      
       await axios 
         .get(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/posts/${this.postId}` , {
           headers: {
@@ -147,16 +147,15 @@ export default {
           }
         })
         .then((response )=> { 
-          // console.log("la reponse post id : ", response.data[0]);
           for (let i = 0; i < response.data.length; i++) {
             this.post = {
-              id: response.data[i].id,
+              id: response.data[i].postID,
               avatar_url: response.data[i].avatar_url,
               pseudo: response.data[i].pseudo,
               title: response.data[i].title,
               description: response.data[i].description,
               media_url: response.data[i].media_url,
-              date: dayjs(response.data[i].date).format('dddd D MMM YYYY [à] H[h]mm')  //dayjs(res.data[i].date_post).format('L')  //res.data[i].date_post
+              postDate: dayjs(response.data[i].postDate).format('dddd D MMM YYYY [à] H[h]mm')  
             }
         }
     })
@@ -171,24 +170,19 @@ export default {
         })
         .then((res )=> { 
           console.log("la reponse comment id : ", res.data);
-          
-         
-         for (let i = 0; i < res.data.length; i++) {
-            this.comments.push({
-              id: res.data[i].id_Comment,
-              idUser: res.data[i].idUser,
-              comment: res.data[i].comment,
-              comUserID: res.data[i].userIdComment,
-              pseudo: res.data[i].pseudo,
-              avatar_url: res.data[i].avatar_url,
-              date: dayjs(res.data[i].date).format('dddd D MMM YYYY [à] H[h]mm')  //dayjs(res.data[i].date_post).format('L')  //res.data[i].date_post
-            })
-        }
+          for (let i = 0; i < res.data.length; i++) {
+              this.comments.push({
+                id: res.data[i].id_Comment,
+                idUser: res.data[i].idUser,
+                comment: res.data[i].comment,
+                comUserID: res.data[i].userIdComment,
+                pseudo: res.data[i].pseudo,
+                avatar_url: res.data[i].avatar_url,
+                dateComment: dayjs(res.data[i].dateComment).format('dddd D MMM YYYY [à] H[h]mm')  //dayjs(res.data[i].date_post).format('L')  //res.data[i].date_post
+              })
+          }
           
           console.log(...res.data);
-          // this.userData();
-          //  this.commentaire();
-          
         })
     },
     // display cadre écrire un comment
@@ -236,14 +230,7 @@ export default {
           console.log("reponse avatar user comment  ",response.data[0]);
           this.userComment = response.data[0];
           console.log("le usercomment",this.userComment) ;
-          // console.log(...res.data);
-          // this.userData();
-          //  this.commentaire();
-          
         })
-
-      // }
-    
     } 
   }
 }
@@ -251,69 +238,5 @@ export default {
 
 <style scoped>
 
-/* .postCommentaire{
-  display: flex;
-  flex-direction: column;
-}
 
-#user_list{
-  margin: 0px auto 20px auto;
-  max-width: 200px;
-}
-.usercard img {
-  max-width: 150px;
-}
-.postCard {
-  background-color: rgb(240, 232, 241);
-  box-shadow: 2px 3px 10px #907497;
-  border-radius: 15px;
-  margin: 20px auto;
-  padding: 20px 0px ;
-  width: 80%;
- 
-}
-.title {
-  font-size: 35px;
-  font-style: oblique;
-}
-textarea {
-  background-color: rgb(238, 220, 241);
-  box-shadow: 2px 3px 10px #563d7c;
-  border-radius: 15px;
-  width: 80%; 
-  height:100px; 
-  resize: none; 
-  padding: 5px 20px 10px 30px;
-}
-.userCard{
-  display: flex;
-  flex-direction: row;
-  background-color: rgb(252, 232, 224);
-  box-shadow: 2px 3px 15px #9589a7;
-  border-radius: 15px;
-  width: 80%; 
-  resize: none; 
-  margin: 20px auto auto auto;
-  
-}
-.userCard img {
-  border-radius: 50%;
-  width: 50px;
-  margin: 10px 30px 30px 30px;
-}
-.userCard h5 {
-  font-size: 12px;
-}
-.date{
- margin-left: 10px;
-}
-h1 {
-    font-size: 25px;
-    font-style: oblique;
-  } */
-/* .sendComment{
-  display: flex;
-  flex-direction: column;
-  margin: auto;
-} */
 </style>

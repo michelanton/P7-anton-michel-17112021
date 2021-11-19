@@ -4,8 +4,8 @@ PROTOCOLE="http"
 SERVER="localhost:3000"
 
 SQL_HOST="localhost"
-SQL_USER="mimi"
-SQL_PASSWD="mimitrue"
+SQL_USER="VOTRE NOM D'UTILISATEUR"
+SQL_PASSWD="VOTRE MOT DE PASSE"
 SQL_DB= "groupomania"
 
 JWT_SECRET="sercret Word Token"

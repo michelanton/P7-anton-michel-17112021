@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : lun. 15 nov. 2021 à 19:38
+-- Généré le : ven. 19 nov. 2021 à 20:15
 -- Version du serveur :  5.7.31
 -- Version de PHP : 7.3.21
 
@@ -34,27 +34,27 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `post_id` int(10) UNSIGNED NOT NULL,
   `comment` text NOT NULL,
   `date` datetime NOT NULL,
-  `pseudo_user` varchar(50) DEFAULT NULL,
-  `avatar_url` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `post_id` (`post_id`) USING BTREE,
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `comments`
 --
 
-INSERT INTO `comments` (`id`, `user_id`, `post_id`, `comment`, `date`, `pseudo_user`, `avatar_url`) VALUES
-(3, 132, 143, 'désolé, ce week-end j\'ai piscine...', '2021-11-14 21:03:49', NULL, NULL),
-(4, 133, 144, 'haha, moi aussi, mais sur le parking... ', '2021-11-14 21:05:54', NULL, NULL),
-(5, 133, 143, 'moi, j\'suis partant', '2021-11-14 21:06:12', NULL, NULL),
-(6, 134, 143, 'moi aussi , j\'en suis.', '2021-11-14 21:09:55', NULL, NULL),
-(7, 134, 145, 'oui... on est là', '2021-11-14 21:10:23', NULL, NULL),
-(8, 131, 145, 't pas tout seul Michel... t pas tout seul...', '2021-11-14 21:11:16', NULL, NULL),
-(10, 132, 145, 'vazy, entre... tu veux un café.. ?', '2021-11-14 21:13:21', NULL, NULL),
-(24, 131, 143, 'moi aussi.. j\'suis partent\n', '2021-11-15 19:00:34', NULL, NULL),
-(25, 131, 145, 'coucou', '2021-11-15 19:00:50', NULL, NULL);
+INSERT INTO `comments` (`id`, `user_id`, `post_id`, `comment`, `date`) VALUES
+(3, 132, 143, 'désolé, ce week-end j\'ai piscine...', '2021-11-14 21:03:49'),
+(4, 133, 144, 'haha, moi aussi, mais sur le parking... ', '2021-11-14 21:05:54'),
+(5, 133, 143, 'moi, j\'suis partant', '2021-11-14 21:06:12'),
+(6, 134, 143, 'moi aussi , j\'en suis.', '2021-11-14 21:09:55'),
+(7, 134, 145, 'oui... on est là', '2021-11-14 21:10:23'),
+(8, 131, 145, 't pas tout seul Michel... t pas tout seul...', '2021-11-14 21:11:16'),
+(10, 132, 145, 'vazy, entre... tu veux un café.. ?', '2021-11-14 21:13:21'),
+(24, 131, 143, 'moi aussi.. j\'suis partent\n', '2021-11-15 19:00:34'),
+(25, 131, 145, 'coucou', '2021-11-15 19:00:50'),
+(28, 131, 143, 'alléé\n', '2021-11-17 00:32:11'),
+(29, 146, 154, 'moi je veux bien... ', '2021-11-17 14:47:56');
 
 -- --------------------------------------------------------
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `posts`
@@ -84,7 +84,6 @@ INSERT INTO `posts` (`id`, `user_id`, `title`, `description`, `media_url`, `link
 (144, 132, '\"Chasse aux pokémons\"', '\"J\'ai attraper un pokémon devant la machine a café...\\nGG ..\"', 'http://localhost:3000/images/gif-manga.gif1636920200286.gif', NULL, '2021-11-14 21:03:20'),
 (145, 133, '\"COUCOU\"', '\"Y-a quelqu\'un ??????\"', 'http://localhost:3000/images/gifs-humour-20.gif1636920311023.gif', NULL, '2021-11-14 21:05:11'),
 (146, 134, '\"la pénurie !\"', '\"distributeur vide...  que fait la police ?\\nSniff\"', 'http://localhost:3000/images/rigolo021.gif1636920560424.gif', NULL, '2021-11-14 21:09:20'),
-(153, 144, '\"Encore en retard!\"', '\"arfff... j\'suis encore en retard ce matin...!!\\nquelqu\'un pour me couvrir?\"', 'http://localhost:3000/images/horloge-et-montre-image-animee-0002.gif1636999796220.gif', NULL, '2021-11-15 19:09:56'),
 (154, 145, '\"covoiturage\"', '\"allé, on le fait !!!\\nquelqu\'un que ca intéresse\\n\"', 'http://localhost:3000/images/81x81-22537.gif1637004835770.gif', NULL, '2021-11-15 20:33:55');
 
 -- --------------------------------------------------------
@@ -101,22 +100,21 @@ CREATE TABLE IF NOT EXISTS `users` (
   `pseudo` varchar(25) NOT NULL,
   `avatar_url` varchar(300) DEFAULT NULL,
   `date_user` datetime DEFAULT NULL,
-  `unptyColn2` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=146 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `pseudo`, `avatar_url`, `date_user`, `unptyColn2`) VALUES
-(128, 'moderateur@groupomania.com', '$2b$10$OxQlXvV5A6Fc.5eA38vCr.n55U6r.vix800c7UWeMN.jQmmC.H1Au', 'MODERATEUR', 'http://localhost:3000/images/télécharger_(2).jfif1636857989542.jpg', '2021-11-14 03:46:29', NULL),
-(131, 'lulu@groupomania.com', '$2b$10$UOMcCATMd1KLBw78gkxVReSngEejZcJcBddOY1oHTy3Ezjd8Ke2uS', 'LULU', 'http://localhost:3000/images/gif-papillons-10.gif1636919674655.gif', '2021-11-14 20:54:34', NULL),
-(132, 'patrick@groupomania.com', '$2b$10$n9DRwZXZRdcxcpOI.CTBceITXLWxmLTERiSMtS5IWcshnhouVsgYa', 'PATRICK', 'http://localhost:3000/images/400-figurine-funko-pop-son-of-zorn-zorn-defender-of-zypheria-with-hot-sauce.jpg1636920109361.jpg', '2021-11-14 21:01:49', NULL),
-(133, 'michel@groupomania.com', '$2b$10$VJJRxbc3hx94ooxuwsdzo.bh1Bp127W6czv6aCDsKKr22.d4c9J8.', 'Michel', 'http://localhost:3000/images/gif-emoticone-13.gif1636920273301.gif', '2021-11-14 21:04:33', NULL),
-(134, 'valerie@groupomania.com', '$2b$10$.B6FQvWsLE8zyTJw2kpileAIy/1ypoN.osuy1nMQft.rve0mBZm1K', 'Val', 'http://localhost:3000/images/images.jfif1636920441681.jpg', '2021-11-14 21:07:21', NULL),
-(144, 'kevin@groupomania.com', '$2b$10$HgZ/0OuQxDNGFrWkaln0eeuIC.BWJ/O0yv/lYzhslBpeMEDw/Saye', 'Kevin', 'http://localhost:3000/images/coolSauce.JPG1636999716634.jpg', '2021-11-14 19:08:36', NULL),
-(145, 'miriam@groupomania.com', '$2b$10$O/JukrsI8Tjeqwhhb8oZSOkmHD9nWDiYGMFFtVr9XF7025bUDMl9.', 'Miriam', 'http://localhost:3000/images/télécharger_(1).jfif1637004736419.jpg', '2021-11-15 20:32:16', NULL);
+INSERT INTO `users` (`id`, `email`, `password`, `pseudo`, `avatar_url`, `date_user`) VALUES
+(128, 'moderateur@groupomania.com', '$2b$10$OxQlXvV5A6Fc.5eA38vCr.n55U6r.vix800c7UWeMN.jQmmC.H1Au', 'MODERATEUR', 'http://localhost:3000/images/télécharger_(2).jfif1636857989542.jpg', '2021-11-14 03:46:29'),
+(131, 'lulu@groupomania.com', '$2b$10$UOMcCATMd1KLBw78gkxVReSngEejZcJcBddOY1oHTy3Ezjd8Ke2uS', 'LULU', 'http://localhost:3000/images/gif-papillons-10.gif1636919674655.gif', '2021-11-14 20:54:34'),
+(132, 'patrick@groupomania.com', '$2b$10$n9DRwZXZRdcxcpOI.CTBceITXLWxmLTERiSMtS5IWcshnhouVsgYa', 'PATRICK', 'http://localhost:3000/images/400-figurine-funko-pop-son-of-zorn-zorn-defender-of-zypheria-with-hot-sauce.jpg1636920109361.jpg', '2021-11-14 21:01:49'),
+(133, 'michel@groupomania.com', '$2b$10$VJJRxbc3hx94ooxuwsdzo.bh1Bp127W6czv6aCDsKKr22.d4c9J8.', 'Michel', 'http://localhost:3000/images/gif-emoticone-13.gif1636920273301.gif', '2021-11-14 21:04:33'),
+(134, 'valerie@groupomania.com', '$2b$10$.B6FQvWsLE8zyTJw2kpileAIy/1ypoN.osuy1nMQft.rve0mBZm1K', 'Val', 'http://localhost:3000/images/images.jfif1636920441681.jpg', '2021-11-14 21:07:21'),
+(145, 'miriam@groupomania.com', '$2b$10$O/JukrsI8Tjeqwhhb8oZSOkmHD9nWDiYGMFFtVr9XF7025bUDMl9.', 'Miriam', 'http://localhost:3000/images/télécharger_(1).jfif1637004736419.jpg', '2021-11-15 20:32:16'),
+(146, 'kevin@groupomania.com', '$2b$10$OwWSprlqoWt85y.1L4sriu/VJTlkSj4uOd3FYwfgf3cLDVCu3yvYm', 'Kevin', 'http://localhost:3000/images/coolSauce.JPG1637140855584.jpg', '2021-11-17 10:20:55');
 
 --
 -- Contraintes pour les tables déchargées

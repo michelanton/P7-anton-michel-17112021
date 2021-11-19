@@ -8,6 +8,63 @@
             <img :src="user.avatar_url" alt="avatar">
             <h2><strong>{{ user.pseudo }}</strong> </h2>
         </div>
+        <!-- cadre créer un article --> 
+    <section class="createPost mb-4" v-if="modePost == 'createPost'">
+      <h3>Créer un article</h3>
+      <div class="  postCard">
+        <!-- formulaire article -->  
+        <form>
+            <div class="choiseAvatar"> 
+              <button 
+                aria-label="Choisir le fichier à partager"
+                type="button" 
+                class="btn btn-primary btnfile"
+                @click="boutonFile()">
+                Choisir un fichier
+              </button>
+              <div class="imageUrl"  >
+                <img :src="imageUrl" alt="">
+              </div>
+              <input 
+                ref="inputFile"
+                type="file"
+                style="display:none" 
+                @change="onFileSelected"
+                class="form-control-file" 
+                id="File" 
+                accept=".jpg, .jpeg, .gif, .png" 
+                name="image" />
+            </div> 
+            <input 
+              type="text" 
+              v-model="title"
+              class="form-control" 
+              placeholder="le titre"
+              name="title">
+            <textarea 
+              id="exampleFormControlTextarea1" 
+              rows="3"
+              class="form-control " 
+              v-model="myComment" 
+              placeholder="le texte">
+            </textarea>
+        </form>
+        <!-- bouton envoyé -->
+        <button
+          aria-label="Publier l'article" 
+          type="submit"  
+          class="button btn btn-warning m-2" 
+          @click="sendPost()">Envoyer
+        </button>
+        <!-- bouton annulé -->
+        <button 
+          aria-label="Annule l'article en cours"
+          type="submit"  
+          class="button btn btn-warning m-2" 
+          @click="annulPost()">Annuler
+        </button>
+      </div>
+    </section>
         <!-- boutons -->
         <div class="btn-group-vertical m-1 p-1" v-if="btnActif == 'btnActif'">
               <!-- bouton Voir tout mes articles -->
@@ -22,14 +79,24 @@
                 aria-label="Vior tout les commentaires"
                 type="button"
                 class="button one btn btn-warning mb-2"
-                @click.prevent="postReturn()">Voir tout les Commentaires
+                @click.prevent="postReturn()">
+                Voir tout les Commentaires
             </button>
             <!-- Supprimer mon profil -->
             <button
                 aria-label="Voir tout les utilisateurs"
                 type="submit"
                 class="button  btn btn-danger mb-1"
-                @click="goUser()">Voir les Users
+                @click="goUser()">
+                Voir les Users
+            </button>
+             <!-- bouton créer un article -->   
+            <button 
+                aria-label="Ouvre la fenetre de redaction d'un article"
+                type="submit" 
+                class="btn btn-success mb-4 mt-2" 
+                @click="createPost()">
+                Créer un article
             </button>
         </div>
         <!-- tout les comments postés -->
@@ -128,7 +195,7 @@
                     aria-label="Voir cet article"
                     type="submit"
                     class="button  btn btn-warning m-3"
-                    @click="goPost(posts.id)">Voir ce post
+                    @click="goPost(posts.postID)">Voir ce post
                 </button>
                 <!-- bouton RETOUR -->
                 <button
@@ -139,6 +206,7 @@
                 </button>
             </section>
         </section>
+         
          <!-- cadre chaques USER -->
         <div v-if="modeUser == 'Users'">
             <!-- bouton retour -->
@@ -167,7 +235,7 @@
                 <button
                     aria-label="Supprimer le profil de l'utilisateur"
                     type="submit"
-                    class="button  btn btn-warning m-3"
+                    class="button  btn btn-danger m-3"
                     @click="supUser(UserAlls.id)">Suprimé le USER
                 </button>
                 <!-- bouton RETOUR -->
@@ -177,7 +245,10 @@
                     class="button  btn btn-warning m-3"
                     @click="annulArticle()">RETOUR
                 </button>
+               
             </section> 
+   
+   
         </div>
     </div>
    
@@ -209,38 +280,54 @@ export default {
             modeComment: "",
             modeProfil: "",
             modeUser: "",
+            modePost: "",
             avatarModif: "",
-            btnActif: "btnActif" 
+            btnActif: "btnActif" ,
+            token: "",
+            id: "",
+            myComment: "",
+            title: "",
+            imageUrl :"",
+            image: null
         }
     },
     components: {
         navSuperUser
     },
     mounted(){
-        this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        this.profil();
-        this.articles();
-        this.AllUser();
-        this.comments();
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (userInfo) { 
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            this.id = userInfo.id;
+            this.token = userInfo.token;
+            this.profil();
+            this.articles();
+            this.AllUser();
+            this.comments();
+        } else {
+             this.$router.push({ name: "to404" });
+        }
     },
     methods : {
+        // MODIF display vers créer un post //  
+        createPost(){
+        this.modePost = 'createPost'
+        },
         // PUSH sur la page superUserComments
         goPost(a){ 
             console.log(a);
             localStorage.setItem("postInfo", JSON.stringify(a));
-            //  console.log("goPsot actif");
             this.$router.push({ name: "superUserComments" });
         },
         // modif display voir les articles
         goArticle(){
             this.btnActif = "inactif";
             this.modeArticle = "articles";
-            
         },
+        // modif display voir les users
         goUser(){
             this.btnActif = "inactif";
             this.modeUser = "Users";
-            
         },
         // retour a la page posts
         postReturn() {
@@ -259,6 +346,7 @@ export default {
                 console.log("la reponse profil : ", res.data[0]);
             })
         },
+        // GET tout les users // postsRoute userAll()
         async AllUser() {
             await axios.get(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/users` , {
                 headers: {
@@ -317,7 +405,8 @@ export default {
                 console.log("la reponse article : ", response.data);
                 for (let i = 0; i < response.data.length; i++) {
                     this.post.push({
-                        id: response.data[i].id_numero,
+                        id: response.data[i].userId,
+                        postID: response.data[i].post_id,
                         avatar_url: response.data[i].avatar_url,
                         pseudo: response.data[i].pseudo,
                         title: JSON.parse(response.data[i].title),
@@ -394,77 +483,64 @@ export default {
             }
             
         },
+        // charge l'image
+        onFileSelected(event) {
+            const files = event.target.files
+            let filename = files[0].name;
+            if ( filename.lastIndexOf('.') <= 0) {
+                return alert("ce n'est pas un fichier valide")
+            }
+            const fileReader = new FileReader()
+            fileReader.addEventListener('load', () => {
+                this.imageUrl = fileReader.result;
+            })
+            fileReader.readAsDataURL(files[0])
+            this.image = files[0]
+                },
+        // POST un article  
+        sendPost(){
+            if ( !this.image ||  this.newMessage > 1500 ) {
+                    console.log("il n'y a pas d'image ou le texte est trop long");        
+            } else {
+                const formData = new FormData()
+                formData.append("image", this.image);
+                formData.append("description", JSON.stringify(this.myComment));
+                formData.append("title", JSON.stringify(this.title));
+                formData.append("user", JSON.stringify(this.id)); 
+
+                axios.post(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/posts`, formData, {
+                    headers: {
+                    'Authorization': `Bearer ${this.token}`
+                    }
+                })
+                .then((response)=> {
+                    if (response.status == 201){
+                    alert('publication réussie!')
+                    location.reload()
+                    }
+                    if (response.status == 401)
+                    {
+                    console.log("holala, ça n'a pas marché, dsl");  
+                    }
+                })
+                .catch((error) => {
+                console.log(error);
+                })
+            }
+        },
+        // annule l'article en cours d'ecriture
+        annulPost(){
+            this.modePost = ''
+        },
+        // 
+        boutonFile() {
+        this.$refs.inputFile.click()
+        }
        
     }
 }
 </script>
 
 <style scoped>
- /*button{
-    max-width: 150px;
-    margin : auto
-}
-
-h6 {
-    font-size: 12px;
-}
-strong {
-    font-size: 18px;
-}
-.article, .commentaire {
-  background-color: rgb(255, 251, 254);
-  box-shadow: 2px 3px 10px #563d7c;
-  border-radius: 15px;
-  margin: 20px auto;
-  padding: 10px 0px ;
-  width: 80%;
-}
-.commentaire img {
-    border-radius: 50%;
-    width: 40px;
-    
-}
-.article img {
-    width: 140px;
-    border-radius: 5px;
-    box-shadow: 2px 3px 10px #563d7c;
-}
-.article h4 {
-    margin-top: 10px;
-}
-
-.postCard {
-  background-color: rgb(252, 240, 248);
-  box-shadow: 2px 3px 10px #563d7c;
-  border-radius: 15px;
-  margin: 20px auto;
-  padding: 20px 0px ;
-  width: 80%;
- 
-}
-.cadreArticle{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  justify-items: center;
-}
-.userPost img {
-border-radius: 50%;
-width: 40px;
-}
-.thePost img{
-    width: 50%;
-}
-textarea, input {
-  background-color: rgb(238, 220, 241);
-  box-shadow: 6px 6px 10px #563d7c;
-  border-radius: 15px;
-  width: 80%; 
-  height:100px; 
-  resize: none; 
-  padding: 5px 20px 10px 30px;
-  margin: 0px auto 20px auto;
-} */
-
 
 </style>

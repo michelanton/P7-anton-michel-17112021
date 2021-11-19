@@ -148,10 +148,15 @@ export default {
         leFooter
     },
     mounted(){
-        this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        this.profil();
-        this.articles();
-        this.comments();
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (userInfo) { 
+            this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            this.profil();
+            this.articles();
+            this.comments();
+        } else {
+            this.$router.push({ name: "to404" });
+        }
     },
     methods : {
         // modif display voir les articles
@@ -203,7 +208,6 @@ export default {
                         console.log("le User a été supprimé..  ");
                         localStorage.clear();
                         this.$router.push({ name: "login" });
-                    
                     }               
                 })
                 .catch((error) => {
@@ -232,11 +236,6 @@ export default {
                             media_url: response.data[i].media_url,
                             date: dayjs(response.data[i].date).format('ddd D MMM YYYY [à] H[h]mm ')  //dayjs(response.data[i].date_post).format('L')  //res.data[i].date_post
                         })
-                        //  console.log("les posts", this.post); 
-                        // console.log(...res.data);
-                        // this.userData();
-                        //  this.commentaire();
-                
                     }
                 })
         },
@@ -246,12 +245,11 @@ export default {
         },
         // GET sur tout les comments d'un user // 
         async comments(){
-            // console.log(this.userInfo.id);
             await axios.get(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/posts/user/comment/${this.userInfo.id}` , {
                 headers: {
                     'Authorization': `Bearer ${this.userInfo.token}`
                 }
-                })
+            })
                 .then((reponse )=> { 
                 console.log("la reponse comment : ", reponse.data);
                     for (let i = 0; i < reponse.data.length; i++) {
@@ -292,7 +290,6 @@ export default {
         },
         // DELETE un comment
         supComment(a){
-            // console.log(a);
             if (window.confirm( "Vous etes sur le point de supprimmer votre commantaire\n" + 
                   "Pour supprimer ce commentaire : cliquez OK \n" +
                   "ANNULER pour revenir au profil")) 
@@ -316,7 +313,6 @@ export default {
                     } else {
                         location.reload(); 
                     }
-             
         },
     }
 }
@@ -324,37 +320,7 @@ export default {
 
 <style scoped>
 
-/* img , button{
-    max-width: 150px;
-    margin : auto
-}
 
-.postCard {
-  background-color: rgb(250, 231, 243);;
-  
-  box-shadow: 2px 3px 10px #563d7c;
-  border-radius: 15px;
-  margin: 20px auto;
-  padding: 20px 0px ;
-  width: 80%;
- 
-}
-.cadreArticle{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  justify-items: center;
-}
-textarea, input {
-  background-color: rgb(238, 220, 241);
-  box-shadow: 6px 6px 10px #563d7c;
-  border-radius: 15px;
-  width: 80%; 
-  height:100px; 
-  resize: none; 
-  padding: 5px 20px 10px 30px;
-  margin: 0px auto 20px auto;
-} */
 
 
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <navGeneral></navGeneral>
-    <h1 class="mt-2">Voici les derniers articles</h1>
+    <h1 class="title mt-2">Voici les derniers articles</h1>
     <!-- cadre utilisateur -->
     <div class=" userinuse mb-4 mt-4" >
       <div class="userAvatar">
@@ -84,7 +84,7 @@
         <div class="colorCadrePost ">
           <div class=" userinuse ">
             <div class="userAvatar">
-              <img :src="posts.avatar_url" alt="avatar">
+              <img :src="posts.avatar_url" alt="{{posts.pseudo}}">
             </div>
               <h3 class=" pseudo mt-3">{{posts.pseudo}}</h3>
           </div>
@@ -93,7 +93,9 @@
             <img :src="posts.media_url" alt="media">
           </div>
           <h3 class=" textArticle m-2">{{posts.description}}</h3>
-          <h4 class="voirComments card__action mr-2 ml-2" aria-label="Voir cet article avec ses commentaires" @click="goPost(posts.id)">
+          <h4 class="voirComments card__action mr-2 ml-2" 
+              aria-label="Voir cet article avec ses commentaires" 
+              @click="goPost(posts.id)">
             Voir les commentaires de cet article</h4>
         </div>  
       </div>
@@ -138,15 +140,16 @@ export default {
     leFooter
   },
   mounted(){ 
-    const userInfo = JSON.parse(localStorage.getItem('userInfo')); //on récupère les infos de connection
-    if (userInfo) { //On vérifie si l'utilisateur s'est connecté, sinon on le renvoie vers la page login
-    this.email = userInfo.email;
-    this.token = userInfo.token;
-    this.id = userInfo.id;
+    const userInfo = JSON.parse(localStorage.getItem('userInfo')); 
+    if (userInfo) { 
+      this.email = userInfo.email;
+      this.token = userInfo.token;
+      this.id = userInfo.id;
+      this.getallpost();
+      this.userData(); 
+    } else {
+      this.$router.push({ name: "to404" });
     }
-    // console.log(this.token);
-    this.getallpost();
-    this.userData(); 
   },
   methods : {
      // GET touts les posts //  Pointe vers allPosts()
@@ -159,11 +162,12 @@ export default {
       })
       .then((res )=> { 
         console.log(res); 
+      
         if (res.status == 200) {
         // this.posts = res.data 
-        for (let i = 0; i < res.data.length; i++) {
+          for (let i = 0; i < res.data.length; i++) {
             this.posts.push({
-              id: res.data[i].id_numero,
+              id: res.data[i].post_id,
               avatar_url: res.data[i].avatar_url,
               pseudo: res.data[i].pseudo,
               title: JSON.parse(res.data[i].title),
@@ -171,21 +175,19 @@ export default {
               media_url: res.data[i].media_url,
               date: dayjs(res.data[i].date_post).format('ddd D MMM YYYY [à] H[h]mm ')  //dayjs(res.data[i].date_post).format('L')  //res.data[i].date_post
             })
-        let PourStorage = JSON.parse(localStorage.getItem("userInfo"));
-        this.userEmail = PourStorage.email
-        this.token = PourStorage.token
-        //  console.log(PourStorage); 
-       
-        // this.userData();
-        //  this.commentaire();
-        
+          let PourStorage = JSON.parse(localStorage.getItem("userInfo"));
+          this.userEmail = PourStorage.email
+          this.token = PourStorage.token
+          //  console.log(PourStorage); 
+          }
+        } else if (res.status == 409) {
+          console.loc("res 409");
+        } else  {
+          console.log("router psuh");
+          this.$router.push({ name: "to404" });
         }
-      } else if (res.status == 409) {
-        console.loc("res 409");
-    }
-    })
+      })
     },
-  
     // GET un user //  Pointe vers userEmail()
     async userData(){
       // console.log(this.email);
@@ -203,7 +205,6 @@ export default {
     // PUSH vers "postCommentaire" //  Pointe vers allPosts()
     goPost(a){ 
      localStorage.setItem("postInfo", JSON.stringify(a));
-    //  console.log("goPsot actif");
      this.$router.push({ name: "postCommentaires" });
     },
     // MODIF display vers créer un post //  
@@ -214,6 +215,7 @@ export default {
     annulPost(){
       this.modePost = 'bouton'
     },
+    // choix image
     onFileSelected(event) {
       const files = event.target.files
       let filename = files[0].name;
@@ -227,6 +229,7 @@ export default {
       fileReader.readAsDataURL(files[0])
       this.image = files[0]
     },
+    // GET un post
     sendPost(){
       if ( !this.image ||  this.newMessage > 1500 ) {
               console.log("il n'y a pas d'image ou le texte est trop long");        
@@ -236,7 +239,6 @@ export default {
           formData.append("description", JSON.stringify(this.myComment));
           formData.append("title", JSON.stringify(this.title));
           formData.append("user", JSON.stringify(this.id)); 
-
           axios.post(`${PROTOCOLE.PROTOCOLE}://${PROTOCOLE.SERVER}/posts`, formData, {
             headers: {
               'Authorization': `Bearer ${this.token}`
@@ -257,6 +259,7 @@ export default {
           })
       }
     },
+    // choix image
     boutonFile() {
       this.$refs.inputFile.click()
     }

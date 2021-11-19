@@ -26,7 +26,7 @@ export default {
 
 <style >
 footer {
-    background-color: rgb(56, 67, 228);
+    background-color: #9fd4f3;
     min-height: 100px;
     width: 95%;
     margin: 20px auto;
@@ -36,16 +36,16 @@ footer {
 footer h5{
     margin: 10px 0px 10px 10px;
     font-size: 22px;
-    color: rgb(208, 228, 245);
+    color: rgb(182, 34, 34);
 }
 footer h4{
     margin: 0px 0px 30px 0px;
     font-size: 28px;
-    color: rgb(245, 232, 208);
+    color: rgb(18, 7, 117);
 }
 footer a {
     font-size: 22px;
-    color: bisque;
+    color: rgb(3, 92, 170);
     margin: 5px 0px 10px 10px;
     text-decoration: none;
 }
